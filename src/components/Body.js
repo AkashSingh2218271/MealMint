@@ -1,11 +1,32 @@
 import Card from "./Card";
 import resList from "../utils/mockData";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Shimmer from "./Shimmer";
 
 const Body = () => {
   // local state variable
-  const [listOfRestaurants, setListOfRestaurants] = useState(resList);  
-  return (
+  const [listOfRestaurants, setListOfRestaurants] = useState([]);
+  
+  useEffect(()=>{
+    fetchData();
+  }, []); 
+  
+  const fetchData = async () => {
+    const data = await fetch("https://www.swiggy.com/dapi/restaurants/list/v5?lat=30.2982549&lng=77.9681544&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING");
+    const jsonFormat = await data.json();
+    // console.log(jsonForm);
+    // optional chaining
+    setListOfRestaurants(jsonFormat?.data?.cards[1]?.card?.card?.gridElements?.infoWithStyle?.restaurants);
+  };
+  
+  // this is know as conditional rendering 
+  // if (listOfRestaurants.length === 0) {
+  //   // return <h1>Loading...</h1>;
+  //   return <Shimmer />;
+  // }
+
+  // this is know as conditional rendering 
+  return listOfRestaurants.length === 0 ? <Shimmer /> : (
     <div className="body">
       <div className="filter">
         <button className="filter-btn" onClick={() => {
@@ -32,3 +53,6 @@ const Body = () => {
 };
 
 export default Body;
+
+
+
